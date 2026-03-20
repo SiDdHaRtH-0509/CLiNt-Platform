@@ -95,4 +95,55 @@ requestRouter.patch('/:id/status', authMiddleware, adminMiddleware, async (req, 
   }
 });
 
-module.exports = { workshopRouter: router, requestRouter };
+// Admin routes
+const adminRouter = express.Router();
+const { User } = require('../models/index');
+
+adminRouter.get('/students', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const students = await User.find({ role: 'student' }).select('-password').sort({ createdAt: -1 });
+    res.json({ success: true, students });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Chatbot route
+const chatRouter = express.Router();
+
+chatRouter.post('/', async (req, res) => {
+  console.log('💬 Chat request received:', req.body?.message);
+  try {
+    const { message, history } = req.body;
+    const SYSTEM_PROMPT = `You are CLiNt AI, a helpful assistant for CLiNt — a tech workshop platform for engineering students. CLiNt offers workshops in AI & Machine Learning, Full-Stack Web Development, Cybersecurity & Ethical Hacking, and Developer Tools. Workshop prices range from 2499 to 4999 rupees. Duration 2-5 days. Keep answers concise and friendly.`;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+  },
+  body: JSON.stringify({
+    model: 'llama-3.1-8b-instant',
+    messages: [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...(history || []).map(m => ({
+        role: m.role === 'assistant' ? 'assistant' : 'user',
+        content: m.text
+      })),
+      { role: 'user', content: message }
+    ],
+    max_tokens: 500
+  })
+});
+const data = await response.json();
+console.log('Groq response:', JSON.stringify(data).slice(0, 300));
+const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't process that.";
+    res.json({ success: true, reply });
+  } catch (err) {
+    console.log('Chat error:', err.message);
+    res.status(500).json({ success: false, reply: "Server error. Try again!" });
+  }
+});
+
+module.exports = { workshopRouter: router, requestRouter, adminRouter, chatRouter };

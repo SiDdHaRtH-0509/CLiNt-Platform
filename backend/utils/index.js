@@ -1,7 +1,7 @@
 // utils/certificate.js - PDF Certificate Generator
 const PDFDocument = require('pdfkit');
 const { v4: uuidv4 } = require('uuid');
-const Certificate = require('../models/Certificate');
+const { Certificate } = require('../models/index');
 const path = require('path');
 const fs = require('fs');
 

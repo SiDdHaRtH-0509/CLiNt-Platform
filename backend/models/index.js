@@ -118,3 +118,13 @@ const ResourceSchema = new mongoose.Schema({
 });
 
 mongoose.model('Resource', ResourceSchema);
+
+
+module.exports = {
+  User: mongoose.model('User'),
+  Workshop: mongoose.model('Workshop'),
+  WorkshopRequest: mongoose.model('WorkshopRequest'),
+  Participant: mongoose.model('Participant'),
+  Certificate: mongoose.model('Certificate'),
+  Resource: mongoose.model('Resource'),
+};

@@ -1,5 +1,7 @@
 import { useState, useEffect, createContext, useContext } from "react";
 
+const API_URL = "http://localhost:5000/api";
+
 // ============================================================
 // THEME & GLOBAL STYLES
 // ============================================================
@@ -423,10 +425,19 @@ const BookingModal = ({ workshop, onClose }) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.phone) { toast("Please fill all required fields", "error"); return; }
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1500));
+    try {
+      const token = localStorage.getItem("clint_token");
+      const res = await fetch(`${API_URL}/workshops/${workshop.id}/enroll`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, college: form.college })
+      });
+      const data = await res.json();
+      if (!res.ok && res.status !== 400) { toast(data.message || "Booking failed", "error"); setLoading(false); return; }
+    } catch (err) {}
     setLoading(false);
     setSuccess(true);
-    toast("Workshop booked successfully! Check your email.", "success");
+    toast("Workshop booked successfully!", "success");
   };
 
   if (success) return (
@@ -795,18 +806,22 @@ const LoginPage = ({ setPage }) => {
     e.preventDefault();
     if (!form.email || !form.password) { toast("Please enter credentials", "error"); return; }
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1200));
-    setLoading(false);
-    // Mock login: admin@clint.dev = admin, anything else = student
-    if (form.email === "admin@clint.dev") {
-      login({ id: "admin1", name: "Admin User", email: form.email, role: "admin" });
-      toast("Welcome back, Admin!", "success");
-      setPage("admin");
-    } else {
-      login({ id: "u1", name: "Student User", email: form.email, role: "student", college: "Demo University" });
-      toast("Login successful!", "success");
-      setPage("dashboard");
+    try {
+      const res = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, password: form.password })
+      });
+      const data = await res.json();
+      if (!res.ok) { toast(data.message || "Login failed", "error"); setLoading(false); return; }
+      localStorage.setItem("clint_token", data.token);
+      login(data.user);
+      toast(`Welcome back, ${data.user.name}!`, "success");
+      setPage(data.user.role === "admin" ? "admin" : "dashboard");
+    } catch (err) {
+      toast("Server error. Is backend running?", "error");
     }
+    setLoading(false);
   };
 
   return (
@@ -859,11 +874,22 @@ const SignupPage = ({ setPage }) => {
     if (!name || !email || !password) { toast("Please fill all required fields", "error"); return; }
     if (password.length < 6) { toast("Password must be at least 6 characters", "error"); return; }
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1500));
+    try {
+      const res = await fetch(`${API_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, college: form.college, phone: form.phone })
+      });
+      const data = await res.json();
+      if (!res.ok) { toast(data.message || "Registration failed", "error"); setLoading(false); return; }
+      localStorage.setItem("clint_token", data.token);
+      login(data.user);
+      toast("Account created! Welcome to CLiNt 🎉", "success");
+      setPage("dashboard");
+    } catch (err) {
+      toast("Server error. Is backend running?", "error");
+    }
     setLoading(false);
-    login({ id: `u${Date.now()}`, name, email, role: "student", college: form.college });
-    toast("Account created! Welcome to CLiNt 🎉", "success");
-    setPage("dashboard");
   };
 
   return (
@@ -1164,9 +1190,20 @@ const AdminDashboard = ({ setPage }) => {
   const { user } = useAuth();
   const toast = useToast();
   const [activeTab, setActiveTab] = useState("overview");
-  const [requests, setRequests] = useState(MOCK_WORKSHOP_REQUESTS);
+  const [requests, setRequests] = useState([]);
+  const [students, setStudents] = useState([]);
   const [uploadModal, setUploadModal] = useState(false);
   const [certModal, setCertModal] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("clint_token");
+    fetch(`${API_URL}/requests`, { headers: { "Authorization": `Bearer ${token}` } })
+      .then(r => r.json()).then(d => { if (d.success) setRequests(d.requests); })
+      .catch(() => setRequests(MOCK_WORKSHOP_REQUESTS));
+    fetch(`${API_URL}/admin/students`, { headers: { "Authorization": `Bearer ${token}` } })
+      .then(r => r.json()).then(d => { if (d.success) setStudents(d.students); })
+      .catch(() => setStudents(MOCK_STUDENTS));
+  }, []);
 
   if (!user || user.role !== "admin") {
     return (
@@ -1181,8 +1218,19 @@ const AdminDashboard = ({ setPage }) => {
     );
   }
 
-  const handleStatus = (id, status) => {
-    setRequests(p => p.map(r => r.id === id ? { ...r, status } : r));
+  const handleStatus = async (id, status) => {
+    const token = localStorage.getItem("clint_token");
+    try {
+      const res = await fetch(`${API_URL}/requests/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ status })
+      });
+      const data = await res.json();
+      if (data.success) setRequests(p => p.map(r => r._id === id || r.id === id ? { ...r, status } : r));
+    } catch (err) {
+      setRequests(p => p.map(r => r._id === id || r.id === id ? { ...r, status } : r));
+    }
     toast(status === "approved" ? "Request approved! Email sent to college." : "Request rejected.", status === "approved" ? "success" : "error");
   };
 
@@ -1452,6 +1500,182 @@ const AdminDashboard = ({ setPage }) => {
   );
 };
 
+
+// ============================================================
+// CLINT AI CHATBOT
+// ============================================================
+const CLiNtChatbot = () => {
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { role: "assistant", text: "Hey! I'm CLiNt AI 👋 Ask me anything about our workshops, enrollment, certificates, or tech topics!" }
+  ]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useState(null);
+
+  const SYSTEM_PROMPT = `You are CLiNt AI, a helpful assistant for CLiNt — a tech workshop platform for engineering students.
+CLiNt offers workshops in: AI & Machine Learning, Full-Stack Web Development, Cybersecurity & Ethical Hacking, and Developer Tools (Docker, DevOps).
+Workshop prices range from ₹2,499 to ₹4,999. Duration: 2-5 days.
+You help students with: workshop info, enrollment, certificates, tech doubts, career advice, and coding questions.
+Keep answers concise, friendly, and helpful. Use emojis occasionally. If asked about pricing/enrollment, direct them to the Workshops page.`;
+
+  const sendMessage = async () => {
+    if (!input.trim() || loading) return;
+    const userMsg = input.trim();
+    setInput("");
+    setMessages(prev => [...prev, { role: "user", text: userMsg }]);
+    setLoading(true);
+
+    try {
+      const history = messages.slice(-6).map(m => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: m.text
+      }));
+
+      const res = await fetch(`${API_URL}/chat`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ message: userMsg, history: messages.slice(-6) })
+});
+const data = await res.json();
+const reply = data.reply || "Sorry, I couldn't process that. Try again!";
+      setMessages(prev => [...prev, { role: "assistant", text: reply }]);
+    } catch (err) {
+      setMessages(prev => [...prev, { role: "assistant", text: "Oops! Something went wrong. Please try again 🙏" }]);
+    }
+    setLoading(false);
+  };
+
+  const handleKey = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  };
+
+  const quickQuestions = [
+    "What workshops do you offer?",
+    "How to get a certificate?",
+    "What is the fee for AI workshop?",
+    "How to enroll?"
+  ];
+
+  return (
+    <>
+      {/* Chat Button */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          position: "fixed", bottom: "2rem", right: "2rem", zIndex: 1000,
+          width: 56, height: 56, borderRadius: "50%",
+          background: "linear-gradient(135deg, var(--accent), var(--accent2))",
+          border: "none", cursor: "pointer", fontSize: "1.4rem",
+          boxShadow: "0 4px 20px rgba(0,212,255,0.4)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "transform 0.2s"
+        }}
+        onMouseOver={e => e.currentTarget.style.transform = "scale(1.1)"}
+        onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
+      >
+        {open ? "✕" : "🤖"}
+      </button>
+
+      {/* Chat Window */}
+      {open && (
+        <div style={{
+          position: "fixed", bottom: "5.5rem", right: "2rem", zIndex: 999,
+          width: 360, height: 500, background: "var(--bg2)",
+          border: "1px solid var(--border)", borderRadius: 16,
+          display: "flex", flexDirection: "column", overflow: "hidden",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.5)"
+        }}>
+          {/* Header */}
+          <div style={{
+            padding: "14px 16px", borderBottom: "1px solid var(--border)",
+            background: "linear-gradient(135deg, rgba(0,212,255,0.1), rgba(124,58,237,0.1))",
+            display: "flex", alignItems: "center", gap: 10
+          }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: "linear-gradient(135deg, var(--accent), var(--accent2))",
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem"
+            }}>🤖</div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: "0.9rem" }}>CLiNt AI</div>
+              <div style={{ fontSize: "0.7rem", color: "var(--success)" }}>● Online</div>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "12px 14px", display: "flex", flexDirection: "column", gap: 10 }}>
+            {messages.map((msg, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start" }}>
+                <div style={{
+                  maxWidth: "80%", padding: "10px 14px", borderRadius: 12,
+                  fontSize: "0.82rem", lineHeight: 1.6,
+                  background: msg.role === "user"
+                    ? "linear-gradient(135deg, var(--accent), var(--accent2))"
+                    : "var(--bg3)",
+                  color: msg.role === "user" ? "#000" : "var(--text)",
+                  borderBottomRightRadius: msg.role === "user" ? 4 : 12,
+                  borderBottomLeftRadius: msg.role === "assistant" ? 4 : 12,
+                }}>
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            {loading && (
+              <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                <div style={{ background: "var(--bg3)", padding: "10px 14px", borderRadius: 12, fontSize: "0.82rem", color: "var(--text3)" }}>
+                  CLiNt AI is typing...
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Quick Questions */}
+          {messages.length <= 1 && (
+            <div style={{ padding: "0 12px 8px", display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {quickQuestions.map((q, i) => (
+                <button key={i} onClick={() => { setInput(q); }}
+                  style={{
+                    background: "var(--bg3)", border: "1px solid var(--border)",
+                    color: "var(--text2)", padding: "4px 10px", borderRadius: 20,
+                    fontSize: "0.7rem", cursor: "pointer", fontFamily: "inherit"
+                  }}>
+                  {q}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Input */}
+          <div style={{ padding: "10px 12px", borderTop: "1px solid var(--border)", display: "flex", gap: 8 }}>
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Ask anything..."
+              style={{
+                flex: 1, background: "var(--bg3)", border: "1px solid var(--border)",
+                color: "var(--text)", padding: "8px 12px", borderRadius: 8,
+                fontSize: "0.8rem", fontFamily: "inherit", outline: "none"
+              }}
+            />
+            <button
+              onClick={sendMessage}
+              disabled={loading || !input.trim()}
+              style={{
+                background: "var(--accent)", border: "none", color: "#000",
+                width: 36, height: 36, borderRadius: 8, cursor: "pointer",
+                fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center",
+                opacity: loading || !input.trim() ? 0.5 : 1
+              }}
+            >→</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 // ============================================================
 // APP
 // ============================================================
@@ -1481,6 +1705,7 @@ export default function App() {
         <div style={{ position: "relative", zIndex: 1 }}>
           <Navbar page={page} setPage={setPage} />
           {renderPage()}
+          <CLiNtChatbot />
         </div>
       </ToastProvider>
     </AuthProvider>
