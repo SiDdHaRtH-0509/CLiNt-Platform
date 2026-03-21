@@ -10,7 +10,7 @@
 [![JWT](https://img.shields.io/badge/Auth-JWT-000000?style=flat-square&logo=jsonwebtokens)](https://jwt.io/)
 [![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA-orange?style=flat-square)](https://groq.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)]()
 
 [Live Demo](#) · [Report Bug](issues) · [Request Feature](issues)
 
@@ -302,7 +302,11 @@ GROQ_API_KEY=your_groq_api_key
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is propritary software. All rights reserved.
+
+© 2026 CLiNt Technologies - Siddharth
+
+Unauthorized copying, modification, distribution, or use of this software, via any medium, is strictly prohibited without prior written permission from the author.
 
 ---
 
