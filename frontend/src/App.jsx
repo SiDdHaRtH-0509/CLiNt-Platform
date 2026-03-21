@@ -968,7 +968,7 @@ const DashboardPage = ({ setPage }) => {
   }
 
   const enrolled = WORKSHOPS.slice(0, 2);
-  const tabs = ["overview", "workshops", "certificates", "profile"];
+  const tabs = ["overview", "workshops", "certificates", "analytics", "profile"];
 
   const CertCard = ({ w }) => (
     <div className="card" style={{ padding: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
@@ -1063,6 +1063,137 @@ const DashboardPage = ({ setPage }) => {
             </div>
           </div>
         )}
+
+        {/* Overall Progress Ring */}
+<div className="card" style={{ padding: 24, marginBottom: 20, display: "flex", alignItems: "center", gap: 32, flexWrap: "wrap" }}>
+  <div style={{ position: "relative", width: 140, height: 140, flexShrink: 0 }}>
+    <svg viewBox="0 0 140 140" width="140" height="140">
+      <circle cx="70" cy="70" r="56" fill="none" stroke="var(--border)" strokeWidth="12" />
+      <circle cx="70" cy="70" r="56" fill="none" stroke="var(--accent)" strokeWidth="12"
+        strokeDasharray={`${2 * Math.PI * 56 * 0.67} ${2 * Math.PI * 56}`}
+        strokeDashoffset={2 * Math.PI * 56 * 0.25}
+        strokeLinecap="round"
+        style={{ transition: "stroke-dasharray 1s ease" }}
+      />
+    </svg>
+    <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "1.8rem", color: "var(--accent)" }}>67%</div>
+      <div style={{ fontSize: "0.7rem", color: "var(--text3)" }}>Overall</div>
+    </div>
+  </div>
+  <div style={{ flex: 1, minWidth: 200 }}>
+    <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.1rem", marginBottom: 8 }}>Learning Progress</h4>
+    <p style={{ fontSize: "0.85rem", color: "var(--text3)", marginBottom: 16 }}>You are making great progress! Complete 2 more workshops to unlock your next badge.</p>
+    {[
+      { label: "Workshops Completed", value: "1 / 3", color: "var(--success)" },
+      { label: "Certificates Earned", value: "1", color: "var(--warning)" },
+      { label: "Total Hours", value: "38h / 56h", color: "var(--accent)" },
+    ].map(s => (
+      <div key={s.label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid var(--border)" }}>
+        <span style={{ fontSize: "0.85rem", color: "var(--text3)" }}>{s.label}</span>
+        <span style={{ fontSize: "0.85rem", fontWeight: 600, color: s.color }}>{s.value}</span>
+      </div>
+    ))}
+  </div>
+</div>
+
+        {/* Analytics */}
+        {activeTab === "analytics" && (
+  <div>
+    <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.2rem", marginBottom: 24 }}>Course Completion Analyser</h3>
+    
+    {/* Metric Cards */}
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 16, marginBottom: 24 }}>
+      {[
+        { label: "Overall Completion", value: "67%", color: "var(--success)" },
+        { label: "Workshops Enrolled", value: "3", color: "var(--accent)" },
+        { label: "Avg Score", value: "87%", color: "var(--accent2)" },
+        { label: "Hours Learned", value: "38h", color: "var(--warning)" },
+      ].map(s => (
+        <div key={s.label} className="card" style={{ padding: 20, textAlign: "center" }}>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "2rem", color: s.color }}>{s.value}</div>
+          <div style={{ fontSize: "0.8rem", color: "var(--text3)", marginTop: 4 }}>{s.label}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* Progress Bars */}
+    <div className="card" style={{ padding: 24, marginBottom: 20 }}>
+      <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 20 }}>Progress per Workshop</h4>
+      {[
+        { name: "AI & ML Fundamentals", progress: 100, color: "var(--success)", status: "Completed" },
+        { name: "React & Next.js Masterclass", progress: 65, color: "var(--accent)", status: "In Progress" },
+        { name: "Ethical Hacking & Pentesting", progress: 30, color: "var(--warning)", status: "Started" },
+      ].map(w => (
+        <div key={w.name} style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+          <div style={{ minWidth: 200, fontSize: "0.85rem", color: "var(--text2)" }}>{w.name}</div>
+          <div style={{ flex: 1, height: 8, background: "var(--border)", borderRadius: 4, overflow: "hidden" }}>
+            <div style={{ width: `${w.progress}%`, height: "100%", background: w.color, borderRadius: 4, transition: "width 1s ease" }} />
+          </div>
+          <div style={{ minWidth: 40, fontSize: "0.85rem", fontWeight: 600, color: w.color }}>{w.progress}%</div>
+          <span style={{ fontSize: "0.75rem", padding: "2px 10px", borderRadius: 20, background: `${w.color}20`, color: w.color }}>{w.status}</span>
+        </div>
+      ))}
+    </div>
+
+    {/* Score Tracker */}
+    <div className="card" style={{ padding: 24 }}>
+      <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 16 }}>Score & Grade Tracker</h4>
+      {[
+        { name: "AI & ML Fundamentals", date: "Jan 20, 2026", score: "92%", grade: "A+", color: "var(--success)" },
+        { name: "React & Next.js Masterclass", date: "In Progress", score: "82%", grade: "B+", color: "var(--accent)" },
+        { name: "Ethical Hacking & Pentesting", date: "In Progress", score: "—", grade: "Pending", color: "var(--warning)" },
+      ].map(w => (
+        <div key={w.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid var(--border)" }}>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>{w.name}</div>
+            <div style={{ fontSize: "0.75rem", color: "var(--text3)" }}>{w.date}</div>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.2rem", color: w.color }}>{w.score}</div>
+            <div style={{ fontSize: "0.75rem", color: "var(--text3)" }}>Grade {w.grade}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+        {/* Time Chart */}
+<div className="card" style={{ padding: 24, marginTop: 20 }}>
+  <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 16 }}>Time Spent Learning</h4>
+  <div style={{ display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap" }}>
+    {[
+      { name: "AI & ML", hours: 24, color: "var(--success)", pct: 63 },
+      { name: "React & Next.js", hours: 10, color: "var(--accent)", pct: 26 },
+      { name: "Ethical Hacking", hours: 4, color: "var(--warning)", pct: 11 },
+    ].map(w => (
+      <div key={w.name} style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 200 }}>
+        <div style={{ width: 48, height: 48, borderRadius: "50%", background: `${w.color}20`, border: `3px solid ${w.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.75rem", color: w.color }}>{w.pct}%</div>
+        <div>
+          <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>{w.name}</div>
+          <div style={{ fontSize: "0.8rem", color: "var(--text3)" }}>{w.hours} hours</div>
+        </div>
+      </div>
+    ))}
+  </div>
+  <div style={{ marginTop: 20 }}>
+    {[
+      { name: "AI & ML Fundamentals", hours: 24, total: 38, color: "var(--success)" },
+      { name: "React & Next.js", hours: 10, total: 38, color: "var(--accent)" },
+      { name: "Ethical Hacking", hours: 4, total: 38, color: "var(--warning)" },
+    ].map(w => (
+      <div key={w.name} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+        <div style={{ width: 12, height: 12, borderRadius: 2, background: w.color, flexShrink: 0 }} />
+        <div style={{ flex: 1, fontSize: "0.85rem", color: "var(--text2)" }}>{w.name}</div>
+        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: w.color }}>{w.hours}h</div>
+        <div style={{ width: 120, height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden" }}>
+          <div style={{ width: `${(w.hours/w.total)*100}%`, height: "100%", background: w.color, borderRadius: 3 }} />
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
         {/* Profile tab */}
         {activeTab === "profile" && (
