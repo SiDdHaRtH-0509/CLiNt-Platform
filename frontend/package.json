@@ -4,7 +4,7 @@
   "description": "CLiNt EdTech Platform - Frontend",
   "scripts": {
     "dev": "vite",
-    "build": "node node_modules/vite/bin/vite.js build",
+    "build": "npx vite@5.0.12 build",
     "preview": "vite preview"
   },
   "dependencies": {
