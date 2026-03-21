@@ -31,13 +31,29 @@
 - [Contributing](#-contributing)
 - [License](#-license)
 
+
+---
+
+## 🎵 Vibe Coding Project
+
+This project was built as part of a **Vibe Coding Hackathon** — where the goal is to build real, functional products using AI-assisted development tools and modern dev workflows.
+
+> "Vibe coding is not about writing less code — it's about building more, faster, and better." 
+
+**Tools used:**
+- 🤖 AI-assisted development
+- ⚡ Rapid prototyping
+- 🚀 Production-ready output
+
+---
+
 ---
 
 ## 🚀 About
 
 **CLiNt** is a full-stack EdTech platform built for a technology workshop company that conducts hands-on training for engineering students across India. The platform covers **AI & Machine Learning**, **Full-Stack Web Development**, **Cybersecurity**, and **Modern Developer Tools**.
 
-Built as a complete production-ready web application with real authentication, database integration, AI chatbot, PDF certificate generation, and email notifications.
+Built as a complete production-ready web application with real authentication, database integration, AI chatbot, course completion analyser, PDF certificate generation, and email notifications.
 
 ---
 
@@ -48,6 +64,7 @@ Built as a complete production-ready web application with real authentication, d
 - Browse workshops by category (AI, Web Dev, Cybersecurity, Dev Tools)
 - Enroll in workshops with a booking form
 - View enrolled workshops and track progress
+- **Course Completion Analyser** — progress bars, scores, grades, time spent, overall ring chart
 - Download PDF certificates after completion
 - Access workshop resources (slides, code kits, PDFs)
 - AI chatbot for instant help
@@ -66,9 +83,15 @@ Built as a complete production-ready web application with real authentication, d
 - Full analytics dashboard
 
 ### 🤖 AI Chatbot
-- Powered by **Groq + LLaMA 3** (free & fast)
+- Powered by **Groq + LLaMA 3.1** (free & blazing fast)
 - Answers questions about workshops, enrollment, certificates
 - Can help with general tech questions too
+
+### 📊 Course Completion Analyser
+- Overall progress ring chart
+- Progress bar per workshop
+- Score & grade tracker
+- Time spent learning breakdown
 
 ### 🌐 Platform
 - Dark futuristic UI with modern design
@@ -206,9 +229,6 @@ ADMIN_PASSWORD=Admin@CLiNt2025
 # Groq AI (free at console.groq.com)
 GROQ_API_KEY=your_groq_api_key
 ```
-
-> **Gmail App Password:** Go to Google Account → Security → 2-Step Verification → App Passwords → Generate.
-> **Groq API Key:** Go to [console.groq.com](https://console.groq.com) → API Keys → Create Key (free).
 
 ---
 
