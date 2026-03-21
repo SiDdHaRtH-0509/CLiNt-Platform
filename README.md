@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ CLiNt — Tech Workshop Platform
+# ⚡ CLiNt — Campus Tech Workshop Management Platform
 
 ### Industry-grade technology workshops for engineering students worldwide
 
@@ -9,6 +9,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb)](https://mongodb.com/)
 [![JWT](https://img.shields.io/badge/Auth-JWT-000000?style=flat-square&logo=jsonwebtokens)](https://jwt.io/)
 [![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA-orange?style=flat-square)](https://groq.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
 [Live Demo](#) · [Report Bug](issues) · [Request Feature](issues)
@@ -36,7 +37,7 @@
 
 **CLiNt** is a full-stack EdTech platform built for a technology workshop company that conducts hands-on training for engineering students across India. The platform covers **AI & Machine Learning**, **Full-Stack Web Development**, **Cybersecurity**, and **Modern Developer Tools**.
 
-Built as a complete production-ready web application with real authentication, database integration, PDF certificate generation, and email notifications.
+Built as a complete production-ready web application with real authentication, database integration, AI chatbot, PDF certificate generation, and email notifications.
 
 ---
 
@@ -49,6 +50,7 @@ Built as a complete production-ready web application with real authentication, d
 - View enrolled workshops and track progress
 - Download PDF certificates after completion
 - Access workshop resources (slides, code kits, PDFs)
+- AI chatbot for instant help
 
 ### 🏫 For Colleges
 - Submit workshop requests via a public form
@@ -63,11 +65,16 @@ Built as a complete production-ready web application with real authentication, d
 - Generate certificates for students
 - Full analytics dashboard
 
+### 🤖 AI Chatbot
+- Powered by **Groq + LLaMA 3** (free & fast)
+- Answers questions about workshops, enrollment, certificates
+- Can help with general tech questions too
+
 ### 🌐 Platform
 - Dark futuristic UI with modern design
 - Fully responsive across mobile and desktop
-- Progressive Web App (PWA) support
 - Real-time toast notifications
+- Progressive Web App (PWA) ready
 
 ---
 
@@ -79,6 +86,7 @@ Built as a complete production-ready web application with real authentication, d
 | **Backend** | Node.js, Express.js |
 | **Database** | MongoDB Atlas, Mongoose |
 | **Authentication** | JWT, bcryptjs |
+| **AI Chatbot** | Groq API, LLaMA 3.1 |
 | **PDF Generation** | PDFKit |
 | **Email** | Nodemailer (Gmail SMTP) |
 | **Fonts** | Syne, JetBrains Mono, Outfit |
@@ -103,13 +111,13 @@ clint-platform/
 │   │   └── index.js            # Mongoose schemas
 │   ├── routes/
 │   │   ├── auth.js             # Auth routes + middleware
-│   │   └── workshops.js        # Workshop, request, admin routes
+│   │   └── workshops.js        # Workshop, request, admin, chat routes
 │   ├── utils/
 │   │   └── index.js            # PDF generator + email templates
 │   ├── scripts/
 │   │   └── seed.js             # Database seeder
 │   ├── server.js               # Express entry point
-│   ├── .env                    # Environment variables (not committed)
+│   ├── .env.example            # Environment variables template
 │   └── package.json
 │
 └── README.md
@@ -125,13 +133,14 @@ clint-platform/
 - [Git](https://git-scm.com/)
 - A free [MongoDB Atlas](https://mongodb.com/atlas) account
 - A Gmail account for email notifications
+- A free [Groq](https://console.groq.com) account for AI chatbot
 
 ### Installation
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/clint-platform.git
-cd clint-platform
+git clone https://github.com/SiDdHaRtH-0509/CLiNt-Platform.git
+cd CLiNt-Platform
 ```
 
 **2. Set up the backend**
@@ -175,7 +184,7 @@ Create a `.env` file inside `backend/`:
 ```env
 # Server
 PORT=5000
-NODE_ENV=development
+NODE_ENV=production
 CLIENT_URL=http://localhost:5173
 
 # MongoDB Atlas
@@ -193,9 +202,13 @@ SMTP_PASS=your_gmail_app_password
 # Admin seed credentials
 ADMIN_EMAIL=admin@clint.dev
 ADMIN_PASSWORD=Admin@CLiNt2025
+
+# Groq AI (free at console.groq.com)
+GROQ_API_KEY=your_groq_api_key
 ```
 
 > **Gmail App Password:** Go to Google Account → Security → 2-Step Verification → App Passwords → Generate.
+> **Groq API Key:** Go to [console.groq.com](https://console.groq.com) → API Keys → Create Key (free).
 
 ---
 
@@ -227,6 +240,11 @@ ADMIN_PASSWORD=Admin@CLiNt2025
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
 | `GET` | `/api/admin/students` | Get all students | Admin |
+
+### AI Chatbot
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `POST` | `/api/chat` | Send message to AI | No |
 
 ---
 
@@ -270,6 +288,6 @@ This project is licensed under the MIT License.
 
 <div align="center">
 
-Built with ❤️ by the CLiNt Team · ⭐ Star this repo if you found it helpful!
+Built with ❤️ by **Siddharth** · ⭐ Star this repo if you found it helpful!
 
 </div>
