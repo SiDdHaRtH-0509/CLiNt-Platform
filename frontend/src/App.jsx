@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext } from "react";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://clint-platform-production.up.railway.app/api";
 
 // ============================================================
 // THEME & GLOBAL STYLES
