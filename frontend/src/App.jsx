@@ -297,6 +297,19 @@ const Navbar = ({ page, setPage }) => {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
+
+useEffect(() => {
+  document.documentElement.style.setProperty('--bg', darkMode ? '#050810' : '#f8fafc');
+  document.documentElement.style.setProperty('--bg2', darkMode ? '#080d1a' : '#f1f5f9');
+  document.documentElement.style.setProperty('--bg3', darkMode ? '#0c1225' : '#e2e8f0');
+  document.documentElement.style.setProperty('--surface', darkMode ? '#111827' : '#ffffff');
+  document.documentElement.style.setProperty('--surface2', darkMode ? '#1a2235' : '#f8fafc');
+  document.documentElement.style.setProperty('--border', darkMode ? '#1e2d47' : '#cbd5e1');
+  document.documentElement.style.setProperty('--text', darkMode ? '#e8f0fe' : '#0f172a');
+  document.documentElement.style.setProperty('--text2', darkMode ? '#94a3b8' : '#334155');
+  document.documentElement.style.setProperty('--text3', darkMode ? '#64748b' : '#64748b');
+}, [darkMode]);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -346,6 +359,17 @@ const Navbar = ({ page, setPage }) => {
             </>
           ) : (
             <>
+            <button
+  onClick={() => setDarkMode(!darkMode)}
+  style={{
+    background: "var(--surface)", border: "1px solid var(--border)",
+    color: "var(--text)", width: 36, height: 36, borderRadius: 8,
+    cursor: "pointer", fontSize: "1rem", display: "flex",
+    alignItems: "center", justifyContent: "center", transition: "all 0.2s"
+  }}
+>
+  {darkMode ? "☀️" : "🌙"}
+</button>
               <button className="btn btn-ghost btn-sm" onClick={() => setPage("login")}>Login</button>
               <button className="btn btn-primary btn-sm" onClick={() => setPage("signup")}>Sign Up</button>
             </>
