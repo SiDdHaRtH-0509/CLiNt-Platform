@@ -1709,6 +1709,27 @@ const reply = data.reply || "Sorry, I couldn't process that. Try again!";
 
   return (
     <>
+
+    {/* Notification bubble */}
+{!open && (
+  <div style={{
+    position: "fixed", bottom: "5.5rem", right: "2rem", zIndex: 999,
+    background: "var(--surface2)", border: "1px solid var(--border2)",
+    borderRadius: 12, padding: "10px 16px", fontSize: "0.8rem",
+    color: "var(--text)", boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+    animation: "float 3s ease-in-out infinite",
+    display: "flex", alignItems: "center", gap: 8
+  }}>
+    <span>✨</span>
+    <span>Need guidance? CLiNt AI is here!</span>
+    <button onClick={() => setOpen(true)} style={{
+      background: "var(--accent)", border: "none", color: "#000",
+      padding: "3px 10px", borderRadius: 6, fontSize: "0.75rem",
+      cursor: "pointer", fontFamily: "inherit", fontWeight: 600
+    }}>Chat</button>
+  </div>
+)}
+
       {/* Chat Button */}
       <button
         onClick={() => setOpen(o => !o)}
