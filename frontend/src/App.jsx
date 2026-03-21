@@ -319,7 +319,7 @@ const Navbar = ({ page, setPage }) => {
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
         <button onClick={() => setPage("landing")} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, var(--accent), var(--accent2))", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "0.9rem", color: "#fff" }}>CL</div>
+          <img src="/CLiNtech_logo.png" alt="CLiNt Logo" style={{ width: 36, height: 36, borderRadius: 8, objectFit: "contain" }} />
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "1.3rem", color: "var(--text)" }}>
             CLi<span style={{ color: "var(--accent)" }}>Nt</span>
           </span>
@@ -517,10 +517,29 @@ const LandingPage = ({ setPage }) => {
     const { college, contact, email, topic } = reqForm;
     if (!college || !contact || !email || !topic) { toast("Please fill all required fields", "error"); return; }
     setReqLoading(true);
-    await new Promise(r => setTimeout(r, 1500));
+    try {
+      const res = await fetch(`${API_URL}/requests`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          college: reqForm.college,
+          contactPerson: reqForm.contact,
+          email: reqForm.email,
+          phone: reqForm.phone,
+          topic: reqForm.topic,
+          expectedStudents: reqForm.students,
+          location: reqForm.location,
+          message: reqForm.message
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) { toast(data.message || "Failed to submit", "error"); setReqLoading(false); return; }
+      toast("Workshop request submitted! We'll contact you within 24 hours.", "success");
+      setReqForm({ college: "", contact: "", email: "", topic: "", students: "", location: "", message: "" });
+    } catch (err) {
+      toast("Server error. Is backend running?", "error");
+    }
     setReqLoading(false);
-    toast("Workshop request submitted! We'll contact you within 24 hours.", "success");
-    setReqForm({ college: "", contact: "", email: "", topic: "", students: "", location: "", message: "" });
   };
 
   const stats = [
@@ -1229,7 +1248,7 @@ const AdminDashboard = ({ setPage }) => {
       const data = await res.json();
       if (data.success) setRequests(p => p.map(r => r._id === id || r.id === id ? { ...r, status } : r));
     } catch (err) {
-      setRequests(p => p.map(r => r._id === id || r.id === id ? { ...r, status } : r));
+      setRequests(p => p.map(r => r._id === id || r._id === id ? { ...r, status } : r));
     }
     toast(status === "approved" ? "Request approved! Email sent to college." : "Request rejected.", status === "approved" ? "success" : "error");
   };
@@ -1238,7 +1257,7 @@ const AdminDashboard = ({ setPage }) => {
     { label: "Total Requests", value: requests.length, icon: "📨", color: "var(--accent)" },
     { label: "Pending", value: requests.filter(r => r.status === "pending").length, icon: "⏳", color: "var(--warning)" },
     { label: "Approved", value: requests.filter(r => r.status === "approved").length, icon: "✅", color: "var(--success)" },
-    { label: "Students", value: MOCK_STUDENTS.length, icon: "👥", color: "var(--accent2)" },
+    { label: "Students", value: students.length, icon: "👥", color: "var(--accent2)" },
   ];
 
   const tabs = ["overview", "requests", "students", "workshops", "materials"];
@@ -1305,8 +1324,8 @@ const AdminDashboard = ({ setPage }) => {
                         <td>
                           {r.status === "pending" && (
                             <div style={{ display: "flex", gap: 8 }}>
-                              <button className="btn btn-success btn-sm" onClick={() => handleStatus(r.id, "approved")}>✓ Approve</button>
-                              <button className="btn btn-danger btn-sm" onClick={() => handleStatus(r.id, "rejected")}>✕</button>
+                              <button className="btn btn-success btn-sm" onClick={() => handleStatus(r._id || r.id, "approved")}>✓ Approve</button>
+                              <button className="btn btn-danger btn-sm" onClick={() => handleStatus(r._id || r.id, "rejected")}>✕</button>
                             </div>
                           )}
                         </td>
