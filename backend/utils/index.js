@@ -127,8 +127,14 @@ const getTransporter = () => nodemailer.createTransport({
 });
 
 const sendEmail = async (to, subject, html) => {
-  const transporter = getTransporter();
-  await transporter.sendMail({ from: '"CLiNt Technologies" <noreply@clint.dev>', to, subject, html });
+  const { Resend } = require('resend');
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  await resend.emails.send({
+    from: 'CLiNt <onboarding@resend.dev>',
+    to,
+    subject,
+    html
+  });
 };
 
 const emailStyles = `
