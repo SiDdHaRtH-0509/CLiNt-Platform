@@ -12,7 +12,7 @@
 [![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA-orange?style=flat-square)](https://groq.com/)
 [![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)]()
 
-[Live Demo](#) · [Report Bug](issues) · [Request Feature](issues)
+[Live Demo](https://c-li-nt-platform-95e1.vercel.app) · [Report Bug](issues) · [Request Feature](issues)
 
 </div>
 
