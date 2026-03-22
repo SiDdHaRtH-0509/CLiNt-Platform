@@ -127,10 +127,6 @@ const getTransporter = () => nodemailer.createTransport({
 });
 
 const sendEmail = async (to, subject, html) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`📧 [DEV EMAIL] To: ${to} | Subject: ${subject}`);
-    return;
-  }
   const transporter = getTransporter();
   await transporter.sendMail({ from: '"CLiNt Technologies" <noreply@clint.dev>', to, subject, html });
 };
