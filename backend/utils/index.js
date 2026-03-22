@@ -127,13 +127,14 @@ const getTransporter = () => nodemailer.createTransport({
 });
 
 const sendEmail = async (to, subject, html) => {
-  const { Resend } = require('resend');
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  await resend.emails.send({
-    from: 'CLiNt <onboarding@resend.dev>',
-    to,
+  const SibApiV3Sdk = require('@getbrevo/brevo');
+  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+  apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+  await apiInstance.sendTransacEmail({
+    sender: { name: 'CLiNt Technologies', email: 'clsiddharth7075@gmail.com' },
+    to: [{ email: to }],
     subject,
-    html
+    htmlContent: html
   });
 };
 
