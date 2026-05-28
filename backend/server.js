@@ -27,6 +27,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'CLiNt API running' });
 });
 
+app.get('/', (req, res)  => {
+  res.send('🚀CLiNt Backened is Running')
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ success: false, message: err.message || 'Internal server error' });
