@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext } from "react";
 
-const API_URL = "https://clint-platform-production.up.railway.app/api";
+const API_URL = "https://clint-backend-fbd2.onrender.com/api";
 
 // ============================================================
 // THEME & GLOBAL STYLES
