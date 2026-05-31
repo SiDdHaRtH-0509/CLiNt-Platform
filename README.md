@@ -12,7 +12,7 @@
 [![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA-orange?style=flat-square)](https://groq.com/)
 [![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)]()
 
-[Live Demo](https://c-li-nt-platform-95e1.vercel.app) · [Report Bug](issues) · [Request Feature](issues)
+[🌐 Live Demo](https://c-li-nt-platform-95e1.vercel.app) · [🎥 Demo Video](https://youtu.be/kGbY-8VSR9w) · [🐛 Report Bug](issues) · [✨ Request Feature](issues)
 
 </div>
 
@@ -21,6 +21,7 @@
 ## 📋 Table of Contents
 
 - [About](#-about)
+- [Live Demo](#-live-demo)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
@@ -28,32 +29,30 @@
 - [Environment Variables](#-environment-variables)
 - [API Reference](#-api-reference)
 - [Demo Credentials](#-demo-credentials)
-- [Contributing](#-contributing)
 - [License](#-license)
-
-
----
-
-## 🎵 Vibe Coding Project
-
-This project was built as part of a **Vibe Coding Hackathon** — where the goal is to build real, functional products using AI-assisted development tools and modern dev workflows.
-
-> "Vibe coding is not about writing less code — it's about building more, faster, and better." 
-
-**Tools used:**
-- 🤖 AI-assisted development
-- ⚡ Rapid prototyping
-- 🚀 Production-ready output
-
----
 
 ---
 
 ## 🚀 About
 
-**CLiNt** is a full-stack EdTech platform built for a technology workshop company that conducts hands-on training for engineering students across India. The platform covers **AI & Machine Learning**, **Full-Stack Web Development**, **Cybersecurity**, and **Modern Developer Tools**.
+**CLiNt** is a full-stack AI-powered EdTech platform built during a college hackathon by a 1st year B.Tech student. The platform covers **AI & Machine Learning**, **Full-Stack Web Development**, **Cybersecurity**, and **Modern Developer Tools**.
 
-Built as a complete production-ready web application with real authentication, database integration, AI chatbot, course completion analyser, PDF certificate generation, and email notifications.
+Built as a complete production-ready web application with real authentication, database integration, AI chatbot, course completion analyser, PDF certificate generation, and automated email notifications.
+
+> 🏆 Ranked among top projects across all B.Tech, BCA & BBA years in the hackathon.
+
+---
+
+## 🌐 Live Demo
+
+| Service | URL |
+|---------|-----|
+| **Frontend** | https://c-li-nt-platform-95e1.vercel.app |
+| **Backend API** | https://clint-backend.onrender.com/api/health |
+| **Demo Video** | https://youtu.be/kGbY-8VSR9w |
+| **GitHub** | https://github.com/SiDdHaRtH-0509/CLiNt-Platform |
+
+> ⚠️ Backend hosted on Render free tier — first request may take 30-60 seconds to wake up.
 
 ---
 
@@ -83,9 +82,9 @@ Built as a complete production-ready web application with real authentication, d
 - Full analytics dashboard
 
 ### 🤖 AI Chatbot
-- Powered by **Groq + LLaMA 3.1** (free & blazing fast)
+- Powered by **Groq + LLaMA 3.1** (blazing fast)
 - Answers questions about workshops, enrollment, certificates
-- Can help with general tech questions too
+- Floating bubble UI with auto-greeting
 
 ### 📊 Course Completion Analyser
 - Overall progress ring chart
@@ -94,10 +93,10 @@ Built as a complete production-ready web application with real authentication, d
 - Time spent learning breakdown
 
 ### 🌐 Platform
-- Dark futuristic UI with modern design
+- Dark/Light mode toggle
 - Fully responsive across mobile and desktop
 - Real-time toast notifications
-- Progressive Web App (PWA) ready
+- Automated welcome emails via Brevo
 
 ---
 
@@ -107,12 +106,13 @@ Built as a complete production-ready web application with real authentication, d
 |-------|-----------|
 | **Frontend** | React 18, Vite 5 |
 | **Backend** | Node.js, Express.js |
-| **Database** | MongoDB Atlas, Mongoose |
+| **Database** | MongoDB Atlas |
 | **Authentication** | JWT, bcryptjs |
 | **AI Chatbot** | Groq API, LLaMA 3.1 |
+| **Email** | Brevo (Transactional Email API) |
 | **PDF Generation** | PDFKit |
-| **Email** | Nodemailer (Gmail SMTP) |
-| **Fonts** | Syne, JetBrains Mono, Outfit |
+| **Frontend Hosting** | Vercel |
+| **Backend Hosting** | Render |
 
 ---
 
@@ -150,15 +150,10 @@ clint-platform/
 
 ## 🏁 Getting Started
 
-### Prerequisites
+> 🌐 **Live Demo available — no setup needed!**
+> Visit: https://c-li-nt-platform-95e1.vercel.app
 
-- [Node.js](https://nodejs.org/) v18 or higher
-- [Git](https://git-scm.com/)
-- A free [MongoDB Atlas](https://mongodb.com/atlas) account
-- A Gmail account for email notifications
-- A free [Groq](https://console.groq.com) account for AI chatbot
-
-### Installation
+### Local Development
 
 **1. Clone the repository**
 ```bash
@@ -172,30 +167,15 @@ cd backend
 npm install
 cp .env.example .env
 # Fill in your environment variables
+npm run seed   # creates admin account + sample workshops
+npm run dev    # API at http://localhost:5000
 ```
 
-**3. Seed the database**
+**3. Set up the frontend (new terminal)**
 ```bash
-npm run seed
-```
-
-**4. Start the backend**
-```bash
-npm run dev
-# API running at http://localhost:5000
-```
-
-**5. Set up the frontend (new terminal)**
-```bash
-cd ../frontend
+cd frontend
 npm install
-npm run dev
-# App running at http://localhost:5173
-```
-
-**6. Open your browser**
-```
-http://localhost:5173
+npm run dev    # App at http://localhost:5173
 ```
 
 ---
@@ -205,30 +185,24 @@ http://localhost:5173
 Create a `.env` file inside `backend/`:
 
 ```env
-# Server
 PORT=5000
 NODE_ENV=production
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=https://c-li-nt-platform-95e1.vercel.app
 
-# MongoDB Atlas
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/clint_db?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/clint_db
 
-# JWT
 JWT_SECRET=your_super_secret_jwt_key
 
-# Gmail SMTP
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your.email@gmail.com
-SMTP_PASS=your_gmail_app_password
+BREVO_API_KEY=your_brevo_api_key
 
-# Admin seed credentials
+GROQ_API_KEY=your_groq_api_key
+
 ADMIN_EMAIL=admin@clint.dev
 ADMIN_PASSWORD=Admin@CLiNt2025
-
-# Groq AI (free at console.groq.com)
-GROQ_API_KEY=your_groq_api_key
 ```
+
+> **Brevo:** Free transactional email at [brevo.com](https://brevo.com) — 300 emails/day free
+> **Groq:** Free AI API at [console.groq.com](https://console.groq.com)
 
 ---
 
@@ -245,7 +219,6 @@ GROQ_API_KEY=your_groq_api_key
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
 | `GET` | `/api/workshops` | List all workshops | No |
-| `GET` | `/api/workshops/:id` | Get workshop details | No |
 | `POST` | `/api/workshops/:id/enroll` | Enroll in workshop | Yes |
 | `GET` | `/api/workshops/my/enrolled` | My enrolled workshops | Yes |
 
@@ -268,19 +241,6 @@ GROQ_API_KEY=your_groq_api_key
 
 ---
 
-## 🗄 Database Models
-
-| Model | Key Fields |
-|-------|-----------|
-| **User** | name, email, password (hashed), role, college, phone |
-| **Workshop** | title, category, duration, price, seats, enrolledCount |
-| **WorkshopRequest** | college, contactPerson, email, topic, status, location |
-| **Participant** | user (ref), workshop (ref), enrolledAt, progress |
-| **Certificate** | user (ref), workshop (ref), certId, grade, score |
-| **Resource** | title, workshop (ref), fileUrl, fileType, fileSize |
-
----
-
 ## 🔑 Demo Credentials
 
 | Role | Email | Password |
@@ -290,28 +250,28 @@ GROQ_API_KEY=your_groq_api_key
 
 ---
 
-## 🤝 Contributing
+## 🎵 Vibe Coding Project
 
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+Built during a **Vibe Coding Hackathon** — where the goal is to build real, functional products using AI-assisted development tools.
+
+> "Vibe coding is not about writing less code — it's about building more, faster, and better."
 
 ---
 
 ## 📄 License
 
-This project is propritary software. All rights reserved.
+This project is proprietary software. All rights reserved.
 
-© 2026 CLiNt Technologies - Siddharth
+© 2026 CLiNt Technologies — Siddharth
 
-Unauthorized copying, modification, distribution, or use of this software, via any medium, is strictly prohibited without prior written permission from the author.
+Unauthorized copying, modification, distribution, or use of this software is strictly prohibited without prior written permission.
 
 ---
 
 <div align="center">
 
 Built with ❤️ by **Siddharth** · ⭐ Star this repo if you found it helpful!
+
+🌐 [Live Demo](https://c-li-nt-platform-95e1.vercel.app) · 🎥 [Watch Demo](https://youtu.be/kGbY-8VSR9w) · 📦 [GitHub](https://github.com/SiDdHaRtH-0509/CLiNt-Platform)
 
 </div>
