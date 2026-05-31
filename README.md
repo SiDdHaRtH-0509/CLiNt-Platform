@@ -12,7 +12,7 @@
 [![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA-orange?style=flat-square)](https://groq.com/)
 [![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)]()
 
-[🌐 Live Demo](https://c-li-nt-platform-95e1.vercel.app) · [🎥 Demo Video](https://youtu.be/kGbY-8VSR9w) · [🐛 Report Bug](issues) · [✨ Request Feature](issues)
+[🌐 Live Demo](https://c-li-nt-platform-95e1.vercel.app) · [🎥 Demo Video](https://youtu.be/5bdNvsC51fU) · [🐛 Report Bug](issues) · [✨ Request Feature](issues)
 
 </div>
 
@@ -49,7 +49,7 @@ Built as a complete production-ready web application with real authentication, d
 |---------|-----|
 | **Frontend** | https://c-li-nt-platform-95e1.vercel.app |
 | **Backend API** | https://clint-backend.onrender.com/api/health |
-| **Demo Video** | https://youtu.be/kGbY-8VSR9w |
+| **Demo Video** | https://youtu.be/5bdNvsC51fU |
 | **GitHub** | https://github.com/SiDdHaRtH-0509/CLiNt-Platform |
 
 > ⚠️ Backend hosted on Render free tier — first request may take 30-60 seconds to wake up.
@@ -272,6 +272,6 @@ Unauthorized copying, modification, distribution, or use of this software is str
 
 Built with ❤️ by **Siddharth** · ⭐ Star this repo if you found it helpful!
 
-🌐 [Live Demo](https://c-li-nt-platform-95e1.vercel.app) · 🎥 [Watch Demo](https://youtu.be/kGbY-8VSR9w) · 📦 [GitHub](https://github.com/SiDdHaRtH-0509/CLiNt-Platform)
+🌐 [Live Demo](https://c-li-nt-platform-95e1.vercel.app) · 🎥 [Watch Demo](https://youtu.be/5bdNvsC51fU) · 📦 [GitHub](https://github.com/SiDdHaRtH-0509/CLiNt-Platform)
 
 </div>
