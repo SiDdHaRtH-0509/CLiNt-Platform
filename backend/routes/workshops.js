@@ -213,7 +213,8 @@ Q: Is CLiNtech deployed live?
 A: Yes. CLiNtech is deployed as a live web application using Vercel and Render.
 
 Q: When was CLiNtech built?
-A: CLiNtech was initially developed during a college hackathon. It was build when Siddharth ( Founder ) was in 1st Year of his college ( B.Tech ).
+A: CLiNtech was initially developed during a college hackathon. 
+It was build when Siddharth ( Founder ) was in 1st Year of his college ( B.Tech ).
 
 Q: How long did it take to build CLiNtech?
 A: The core platform was designed, developed, integrated, and deployed within approximately 6 hours during the hackathon.
