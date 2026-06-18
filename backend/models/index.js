@@ -3,13 +3,26 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, unique: true, lowercase: true },
-  password: { type: String, required: true, minlength: 6 },
+  name: { type: String, required: true, trim: true, maxlength: 100 },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    minlength: 5,
+    maxlength: 254,
+    validate: {
+      validator: function(v) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      },
+      message: props => `${props.value} is not a valid email address!`
+    }
+  },
+  password: { type: String, required: true, minlength: 6, maxlength: 128 },
   role: { type: String, enum: ['student', 'admin'], default: 'student' },
-  college: { type: String },
-  phone: { type: String },
-  avatar: { type: String },
+  college: { type: String, maxlength: 200 },
+  phone: { type: String, maxlength: 20 },
+  avatar: { type: String, maxlength: 500 },
   enrolledWorkshops: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workshop' }],
   isVerified: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },

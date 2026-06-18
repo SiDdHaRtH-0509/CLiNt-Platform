@@ -2,6 +2,18 @@ import { useState, useEffect, createContext, useContext } from "react";
 
 const API_URL = "https://clint-backend-fbd2.onrender.com/api";
 
+const secureFetch = async (url, options = {}) => {
+  const timestamp = Date.now().toString();
+  const nonce = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  const headers = {
+    ...(options.headers || {}),
+    "X-Request-Timestamp": timestamp,
+    "X-Request-Nonce": nonce
+  };
+  return fetch(url, { ...options, headers });
+};
+
+
 // ============================================================
 // THEME & GLOBAL STYLES
 // ============================================================
@@ -451,11 +463,12 @@ const BookingModal = ({ workshop, onClose }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("clint_token");
-      const res = await fetch(`${API_URL}/workshops/${workshop.id}/enroll`, {
+      const res = await secureFetch(`${API_URL}/workshops/${workshop.id}/enroll`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, college: form.college })
       });
+
       const data = await res.json();
       if (!res.ok && res.status !== 400) { toast(data.message || "Booking failed", "error"); setLoading(false); return; }
     } catch (err) {}
@@ -540,11 +553,14 @@ const LandingPage = ({ setPage }) => {
     e.preventDefault();
     const { college, contact, email, topic } = reqForm;
     if (!college || !contact || !email || !topic) { toast("Please fill all required fields", "error"); return; }
+    if (email.length < 5 || email.length > 254) { toast("Email must be between 5 and 254 characters", "error"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast("Invalid email format", "error"); return; }
     setReqLoading(true);
     try {
-      const res = await fetch(`${API_URL}/requests`, {
+      const res = await secureFetch(`${API_URL}/requests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+
         body: JSON.stringify({
           college: reqForm.college,
           contactPerson: reqForm.contact,
@@ -713,16 +729,16 @@ const LandingPage = ({ setPage }) => {
           <div className="card" style={{ padding: 40 }}>
             <form onSubmit={handleReqSubmit} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
               {[
-                { key: "college", label: "College/University *", placeholder: "Your institution name", col: 2 },
-                { key: "contact", label: "Contact Person *", placeholder: "Prof. / Dr. Name" },
-                { key: "email", label: "Email *", type: "email", placeholder: "contact@college.edu" },
-                { key: "location", label: "Location", placeholder: "City, State" },
+                { key: "college", label: "College/University *", placeholder: "Your institution name", col: 2, maxLength: 200 },
+                { key: "contact", label: "Contact Person *", placeholder: "Prof. / Dr. Name", maxLength: 100 },
+                { key: "email", label: "Email *", type: "email", placeholder: "contact@college.edu", maxLength: 254 },
+                { key: "location", label: "Location", placeholder: "City, State", maxLength: 200 },
                 { key: "students", label: "Expected Students", type: "number", placeholder: "100" },
               ].map(f => (
                 <div key={f.key} style={{ gridColumn: f.col === 2 ? "1 / -1" : undefined }}>
                   <label className="input-label">{f.label}</label>
                   <input className="input" type={f.type || "text"} placeholder={f.placeholder}
-                    value={reqForm[f.key]} onChange={e => setReqForm(p => ({ ...p, [f.key]: e.target.value }))} />
+                    value={reqForm[f.key]} onChange={e => setReqForm(p => ({ ...p, [f.key]: e.target.value }))} maxLength={f.maxLength} />
                 </div>
               ))}
               <div style={{ gridColumn: "1 / -1" }}>
@@ -848,11 +864,14 @@ const LoginPage = ({ setPage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.email || !form.password) { toast("Please enter credentials", "error"); return; }
+    if (form.email.length < 5 || form.email.length > 254) { toast("Email must be between 5 and 254 characters", "error"); return; }
+    if (form.password.length < 6 || form.password.length > 128) { toast("Password must be between 6 and 128 characters", "error"); return; }
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const res = await secureFetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+
         body: JSON.stringify({ email: form.email, password: form.password })
       });
       const data = await res.json();
@@ -879,11 +898,11 @@ const LoginPage = ({ setPage }) => {
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <div>
               <label className="input-label">Email</label>
-              <input className="input" type="email" placeholder="your@email.com" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} />
+              <input className="input" type="email" placeholder="your@email.com" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} maxLength={254} />
             </div>
             <div>
               <label className="input-label">Password</label>
-              <input className="input" type="password" placeholder="••••••••" value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} />
+              <input className="input" type="password" placeholder="••••••••" value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} maxLength={128} />
             </div>
             <button className="btn btn-primary" type="submit" disabled={loading} style={{ justifyContent: "center" }}>
               {loading ? "Signing in..." : "Sign In →"}
@@ -915,12 +934,15 @@ const SignupPage = ({ setPage }) => {
     e.preventDefault();
     const { name, email, password } = form;
     if (!name || !email || !password) { toast("Please fill all required fields", "error"); return; }
-    if (password.length < 6) { toast("Password must be at least 6 characters", "error"); return; }
+    if (email.length < 5 || email.length > 254) { toast("Email must be between 5 and 254 characters", "error"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast("Invalid email format", "error"); return; }
+    if (password.length < 6 || password.length > 128) { toast("Password must be between 6 and 128 characters", "error"); return; }
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/auth/register`, {
+      const res = await secureFetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+
         body: JSON.stringify({ name, email, password, college: form.college, phone: form.phone })
       });
       const data = await res.json();
@@ -946,15 +968,15 @@ const SignupPage = ({ setPage }) => {
         <div className="card" style={{ padding: 36 }}>
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {[
-              { key: "name", label: "Full Name *", type: "text", placeholder: "Your full name" },
-              { key: "email", label: "Email *", type: "email", placeholder: "your@email.com" },
-              { key: "password", label: "Password *", type: "password", placeholder: "Min. 6 characters" },
-              { key: "college", label: "College/University", type: "text", placeholder: "Your institution" },
-              { key: "phone", label: "Phone", type: "tel", placeholder: "+91 9876543210" },
+              { key: "name", label: "Full Name *", type: "text", placeholder: "Your full name", maxLength: 100 },
+              { key: "email", label: "Email *", type: "email", placeholder: "your@email.com", maxLength: 254 },
+              { key: "password", label: "Password *", type: "password", placeholder: "Min. 6 characters", maxLength: 128 },
+              { key: "college", label: "College/University", type: "text", placeholder: "Your institution", maxLength: 200 },
+              { key: "phone", label: "Phone", type: "tel", placeholder: "+91 9876543210", maxLength: 20 },
             ].map(f => (
               <div key={f.key}>
                 <label className="input-label">{f.label}</label>
-                <input className="input" type={f.type} placeholder={f.placeholder} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} />
+                <input className="input" type={f.type} placeholder={f.placeholder} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} maxLength={f.maxLength} />
               </div>
             ))}
             <button className="btn btn-primary" type="submit" disabled={loading} style={{ justifyContent: "center", marginTop: 4 }}>
@@ -1371,10 +1393,10 @@ const AdminDashboard = ({ setPage }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("clint_token");
-    fetch(`${API_URL}/requests`, { headers: { "Authorization": `Bearer ${token}` } })
+    secureFetch(`${API_URL}/requests`, { headers: { "Authorization": `Bearer ${token}` } })
       .then(r => r.json()).then(d => { if (d.success) setRequests(d.requests); })
       .catch(() => setRequests(MOCK_WORKSHOP_REQUESTS));
-    fetch(`${API_URL}/admin/students`, { headers: { "Authorization": `Bearer ${token}` } })
+    secureFetch(`${API_URL}/admin/students`, { headers: { "Authorization": `Bearer ${token}` } })
       .then(r => r.json()).then(d => { if (d.success) setStudents(d.students); })
       .catch(() => setStudents(MOCK_STUDENTS));
   }, []);
@@ -1395,7 +1417,7 @@ const AdminDashboard = ({ setPage }) => {
   const handleStatus = async (id, status) => {
     const token = localStorage.getItem("clint_token");
     try {
-      const res = await fetch(`${API_URL}/requests/${id}/status`, {
+      const res = await secureFetch(`${API_URL}/requests/${id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ status })
@@ -1706,7 +1728,7 @@ Keep answers concise, friendly, and helpful. Use emojis occasionally. If asked a
         content: m.text
       }));
 
-      const res = await fetch(`${API_URL}/chat`, {
+      const res = await secureFetch(`${API_URL}/chat`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ message: userMsg, history: messages.slice(-6) })

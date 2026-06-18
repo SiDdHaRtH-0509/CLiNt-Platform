@@ -119,6 +119,16 @@ module.exports = { issueCertificate, generateCertificatePDF };
 // utils/email.js - Email Notifications
 const nodemailer = require('nodemailer');
 
+const escapeHtml = (unsafe) => {
+  if (typeof unsafe !== 'string') return '';
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
 const getTransporter = () => nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.SMTP_PORT) || 465,
@@ -152,11 +162,12 @@ const emailStyles = `
 `;
 
 const sendWelcomeEmail = async (email, name) => {
+  const safeName = escapeHtml(name);
   const html = `<html><head><style>${emailStyles}</style></head><body>
     <div class="container">
       <div class="logo">CLi<span>Nt</span></div>
       <div class="card">
-        <h2>Welcome to CLiNt, ${name}! 🎉</h2>
+        <h2>Welcome to CLiNt, ${safeName}! 🎉</h2>
         <p>You've successfully created your account. Explore our workshops and start your learning journey.</p>
         <a href="${process.env.CLIENT_URL || 'http://localhost:3000'}/workshops" class="btn">Browse Workshops →</a>
       </div>
@@ -166,12 +177,14 @@ const sendWelcomeEmail = async (email, name) => {
 };
 
 const sendApprovalEmail = async (email, college, topic) => {
+  const safeCollege = escapeHtml(college);
+  const safeTopic = escapeHtml(topic);
   const html = `<html><head><style>${emailStyles}</style></head><body>
     <div class="container">
       <div class="logo">CLi<span>Nt</span></div>
       <div class="card">
         <h2>Workshop Request Approved! ✅</h2>
-        <p>Great news! Your workshop request from <strong>${college}</strong> for <strong>${topic}</strong> has been approved.</p>
+        <p>Great news! Your workshop request from <strong>${safeCollege}</strong> for <strong>${safeTopic}</strong> has been approved.</p>
         <p>Our team will contact you within 48 hours to finalize the schedule and logistics.</p>
         <a href="${process.env.CLIENT_URL}" class="btn">Visit CLiNt Platform →</a>
       </div>
@@ -181,17 +194,19 @@ const sendApprovalEmail = async (email, college, topic) => {
 };
 
 const sendCertificateEmail = async (email, name, workshopTitle, pdfUrl) => {
+  const safeName = escapeHtml(name);
+  const safeWorkshopTitle = escapeHtml(workshopTitle);
   const html = `<html><head><style>${emailStyles}</style></head><body>
     <div class="container">
       <div class="logo">CLi<span>Nt</span></div>
       <div class="card">
         <h2>Your Certificate is Ready! 🏆</h2>
-        <p>Congratulations, ${name}! Your certificate for <strong>${workshopTitle}</strong> is now available.</p>
+        <p>Congratulations, ${safeName}! Your certificate for <strong>${safeWorkshopTitle}</strong> is now available.</p>
         <a href="${process.env.CLIENT_URL}${pdfUrl}" class="btn">Download Certificate →</a>
       </div>
       <div class="footer">© 2025 CLiNt Technologies</div>
     </div></body></html>`;
-  await sendEmail(email, `Your CLiNt Certificate for ${workshopTitle} is Ready! 🏆`, html);
+  await sendEmail(email, `Your CLiNt Certificate for ${safeWorkshopTitle} is Ready! 🏆`, html);
 };
 
 module.exports = { sendWelcomeEmail, sendApprovalEmail, sendCertificateEmail };
