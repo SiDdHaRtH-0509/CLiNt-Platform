@@ -321,7 +321,7 @@ If a question is unrelated to CLiNtech, answer normally as a helpful AI assistan
     'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
   },
   body: JSON.stringify({
-    model: 'llama-3.1-8b-instant',
+    model: 'openai/gpt-oss-20b',
     messages: [
       { role: 'system', content: SYSTEM_PROMPT },
       ...formattedHistory,
